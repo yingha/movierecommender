@@ -4,7 +4,7 @@ all algorithms return a list of movieids
 """
 import numpy as np
 import pandas as pd
-from utils import movies,ratings,item_avg,final_rec,get_movie_id,get_user_item_matrix # you have already the data access of movies
+from movierecommender.utils import movies,ratings,item_avg,final_rec,get_movie_id,get_user_item_matrix # you have already the data access of movies
 import pickle
 
 
