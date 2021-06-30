@@ -6,6 +6,7 @@ import numpy as np
 import pandas as pd
 from movierecommender.utils import movies,ratings,item_avg,final_rec,get_movie_id,get_user_item_matrix # you have already the data access of movies
 import pickle
+import os
 
 package_dir = os.path.dirname(__file__)
 print(package_dir)
