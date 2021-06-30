@@ -30,7 +30,6 @@ def get_movie_review(movieIds):
     item_review = ratings.groupby(['movieId'])['rating'].aggregate(['mean','count'])
     return item_review.loc[movieIds]
 
-
 def get_movie_id(liked_items):
     """
     given a list of liked_items
@@ -109,5 +108,6 @@ if __name__ == '__main__':
         pickle.dump(model, file)
     
     '''
-
+    movieIds = [260, 1196, 1210, 2628, 5378, 1, 3114, 78499]
+    print(get_movie_review(movieIds))
 
