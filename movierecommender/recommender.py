@@ -7,6 +7,9 @@ import pandas as pd
 from movierecommender.utils import movies,ratings,item_avg,final_rec,get_movie_id,get_user_item_matrix # you have already the data access of movies
 import pickle
 
+package_dir = os.path.dirname(__file__)
+print(package_dir)
+
 
 def recommend_random(liked_items, k=5):
     """
@@ -33,7 +36,8 @@ def personalized_recommender(liked_items, item_rating, k=5):
     Neighborhood-based Collaborative Filtering (NearestNeighbors)
     '''
     item_names, liked_item_ids = get_movie_id(liked_items)
-    with open('./models/movie_recommender_model1.pickle', 'rb') as file:
+
+    with open(package_dir + '/models/movie_recommender_model1.pickle', 'rb') as file:
         model = pickle.load(file)
     user_vec = np.repeat(0, 193610)
     user_vec[liked_item_ids]=item_rating
@@ -49,7 +53,7 @@ def personalized_recommender_nmf(liked_items, item_rating, k=5):
     and returns a list of k movie_ids based on user's preferance
     Collaborative Filtering with Matrix Factorization
     '''
-    with open('./models/movie_recommender_nmf.pickle', 'rb') as file:
+    with open(package_dir + '/models/movie_recommender_nmf.pickle', 'rb') as file:
         nmf = pickle.load(file)
     user_item_matrix = get_user_item_matrix()
     Q = nmf.components_ 
