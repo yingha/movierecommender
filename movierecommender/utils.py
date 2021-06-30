@@ -26,6 +26,11 @@ def lookup_movie(search_query, titles):
     matches = process.extractBests(search_query, titles, score_cutoff=90)
     return matches
 
+def get_movie_review(movieIds):
+    item_review = ratings.groupby(['movieId'])['rating'].aggregate(['mean','count'])
+    return item_review.loc[movieIds]
+
+
 def get_movie_id(liked_items):
     """
     given a list of liked_items
