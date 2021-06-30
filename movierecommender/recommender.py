@@ -84,8 +84,10 @@ if __name__ == '__main__':
     item_rating = ['4', '4', '2', '4', '4', '4']
     #print(personalized_recommender(liked_items, item_rating, k=5))
     #print(personalized_recommender_nmf(liked_items, item_rating, k=5))
-    print(recommend_most_popular(liked_items, item_avg, k=5))
-
+    #print(recommend_most_popular(liked_items, item_avg, k=5))
+    with open(package_dir + '/models/movie_recommender_model1.pickle', 'rb') as file:
+        model = pickle.load(file)
+    print(model)
 
 
 
