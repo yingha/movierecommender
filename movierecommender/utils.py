@@ -12,6 +12,7 @@ print(package_dir)
 # put the movieId into the row index!
 movies = pd.read_csv(package_dir + '/data/ml-latest-small/movies.csv', index_col=0)  
 ratings = pd.read_csv(package_dir + '/data/ml-latest-small/ratings.csv')
+links = pd.read_csv(package_dir + '/data/ml-latest-small/links.csv',index_col=0)
 item_avg = ratings.groupby(['movieId'])['rating'].sum()
                   
 
@@ -29,6 +30,13 @@ def lookup_movie(search_query, titles):
 def get_movie_review(movieIds):
     item_review = ratings.groupby(['movieId'])['rating'].aggregate(['mean','count'])
     return item_review.loc[movieIds]
+
+def get_imdb(movieIds):
+    movie_links=[]
+    for movieId in movieIds:
+        movie_link=links.loc[movieId].to_dict()
+        movie_links.append(movie_link)
+    return movie_links
 
 def get_movie_id(liked_items):
     """
@@ -109,5 +117,5 @@ if __name__ == '__main__':
     
     '''
     movieIds = [260, 1196, 1210, 2628, 5378, 1, 3114, 78499]
-    print(get_movie_review(movieIds))
+    print(get_imdb(movieIds))
 
