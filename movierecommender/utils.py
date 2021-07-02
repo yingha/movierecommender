@@ -36,7 +36,9 @@ def get_imdb(movieIds):
     for movieId in movieIds:
         movie_link=links.loc[movieId].to_dict()
         movie_links.append(movie_link)
-    return movie_links
+    movie_links = pd.DataFrame(movie_links,index=movieIds)
+    movie = movies.loc[movieIds]
+    return movie.join(movie_links)['imdbId'].astype(int)
 
 def get_movie_id(liked_items):
     """
