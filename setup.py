@@ -1,6 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
+
 def open_file(fname):
     """helper function to open a local file"""
     return open(os.path.join(os.path.dirname(__file__), fname))
@@ -17,7 +18,7 @@ setup(
     classifiers=[
         'Programming Language :: Python :: 3.8',
     ],
-    package_data= {
+    package_data={
         'movierecommender': ['data/**/*.csv', 'models/*.pickle']
     },
     description='Implementation of various collaboratively filtering methods',

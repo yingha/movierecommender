@@ -10,35 +10,45 @@ package_dir = os.path.dirname(__file__)
 print(package_dir)
 
 # put the movieId into the row index!
-movies = pd.read_csv(package_dir + '/data/ml-latest-small/movies.csv', index_col=0)  
+movies = pd.read_csv(
+    package_dir +
+    '/data/ml-latest-small/movies.csv',
+    index_col=0)
 ratings = pd.read_csv(package_dir + '/data/ml-latest-small/ratings.csv')
-links = pd.read_csv(package_dir + '/data/ml-latest-small/links.csv',index_col=0)
+links = pd.read_csv(
+    package_dir +
+    '/data/ml-latest-small/links.csv',
+    index_col=0)
 item_avg = ratings.groupby(['movieId'])['rating'].sum()
-                  
+
 
 def lookup_movie(search_query, titles):
     """
-    given a search query, uses fuzzy string matching to search for similar 
+    given a search query, uses fuzzy string matching to search for similar
     strings in a pandas series of movie titles
 
-    returns a list of search results. Each result is a tuple that contains 
+    returns a list of search results. Each result is a tuple that contains
     the title, the matching score and the movieId.
     """
     matches = process.extractBests(search_query, titles, score_cutoff=90)
     return matches
 
+
 def get_movie_review(movieIds):
-    item_review = ratings.groupby(['movieId'])['rating'].aggregate(['mean','count'])
+    item_review = ratings.groupby(
+        ['movieId'])['rating'].aggregate(['mean', 'count'])
     return item_review.loc[movieIds]
 
+
 def get_imdb(movieIds):
-    movie_links=[]
+    movie_links = []
     for movieId in movieIds:
-        movie_link=links.loc[movieId].to_dict()
+        movie_link = links.loc[movieId].to_dict()
         movie_links.append(movie_link)
-    movie_links = pd.DataFrame(movie_links,index=movieIds)
+    movie_links = pd.DataFrame(movie_links, index=movieIds)
     movie = movies.loc[movieIds]
     return movie.join(movie_links)['imdbId'].astype(int)
+
 
 def get_movie_id(liked_items):
     """
@@ -47,58 +57,72 @@ def get_movie_id(liked_items):
     one item_name only returns one liked_item_id
     """
     item_names = []
-    liked_item_ids=[]
+    liked_item_ids = []
     for item in liked_items:
         item_name = lookup_movie(item, movies['title'])
         item_name = item_name[0][0]
         item_names.append(item_name)
-        movie_filter = movies['title']==item_name
+        movie_filter = movies['title'] == item_name
         item_id = movies[movie_filter].index[0]
         liked_item_ids.append(item_id)
     return item_names, liked_item_ids
 
-def final_rec(recommendations,liked_item_ids,k):
+
+def final_rec(recommendations, liked_item_ids, k):
     '''
     take predicted user_item_matrix
     return top k unseen movies for user
     '''
-    item_filter = ~recommendations.index.isin(liked_item_ids) 
+    item_filter = ~recommendations.index.isin(liked_item_ids)
     recommendations = recommendations.loc[item_filter]
     recommendations = movies.loc[recommendations.head(k).index]
     return recommendations
 
+
 def get_user_item_matrix():
-    user_item_matrix = ratings.pivot(index='userId', columns='movieId', values='rating')
+    user_item_matrix = ratings.pivot(
+        index='userId',
+        columns='movieId',
+        values='rating')
     user_item_matrix.fillna(2.5, inplace=True)
     return user_item_matrix
+
 
 def train_nn_model(metric):
     '''
     train model for movie recommender
     Neighborhood-based Collaborative Filtering (NearestNeighbors)
     '''
-    user_item = csr_matrix((ratings['rating'], (ratings['userId'], ratings['movieId'])))
+    user_item = csr_matrix(
+        (ratings['rating'], (ratings['userId'], ratings['movieId'])))
     model = NearestNeighbors(metric=metric)
     model.fit(user_item)
     return model
 
-def train_nmf_model(n_components,init, max_iter):
+
+def train_nmf_model(n_components, init, max_iter):
     '''
     train model for movie recommender
     Collaborative Filtering with Matrix Factorization
-    the 
+    the
     '''
     user_item_matrix = get_user_item_matrix()
-    nmf = NMF(n_components=n_components, init=init,max_iter=max_iter, tol=0.001, verbose=True)
+    nmf = NMF(
+        n_components=n_components,
+        init=init,
+        max_iter=max_iter,
+        tol=0.001,
+        verbose=True)
     nmf.fit(user_item_matrix)
-    print('nmf.reconstruction_err_',nmf.reconstruction_err_)
+    print('nmf.reconstruction_err_', nmf.reconstruction_err_)
     return nmf
+
 
 if __name__ == '__main__':
     '''
     results = process.extractBests('baby yoda', movies['title'])
     # [(title, score, movieId), ...]
-    print(results)    
+    print(results)
 
     liked_items = ['star trek', 'star wars', 'toy story','shawshank redemption']
     item_names, liked_item_ids = get_movie_id(liked_items)
@@ -111,14 +135,13 @@ if __name__ == '__main__':
 
     user_item_matrix = get_user_item_matrix()
     print(user_item_matrix)
-    
+
 
     model = train_nmf_model(n_components=55, init='nndsvd',max_iter=10000)
     with open('./models/movie_recommender_nmf.pickle', 'wb') as file:
         pickle.dump(model, file)
-    
+
     '''
     movieIds = [260, 1196, 1210, 2628, 5378, 1, 3114, 78499]
     print(get_imdb(movieIds))
     print(get_imdb([260]))
-
