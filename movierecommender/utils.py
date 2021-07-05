@@ -120,4 +120,5 @@ if __name__ == '__main__':
     '''
     movieIds = [260, 1196, 1210, 2628, 5378, 1, 3114, 78499]
     print(get_imdb(movieIds))
+    print(get_imdb([260]))
 
